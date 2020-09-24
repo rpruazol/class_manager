@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Pairs</title>
+        <link rel="stylesheet" href="styles/style.css">
+    </head>
+
+    <body>
+        <%- include('layout/header') %>
+        <section>
+            <h2>Add a Student</h2>
+            <form action="/add" method="POST">
+                <input type="text" name="first_name" placeholder="first name"></input>
+                <input type="text" name="last_name" placeholder="last name"></input>
+                <input type="submit" value="submit"></input>
+            </form>
+        </section>
+        <section>
+            <h2>Current Students</h2>
+            <table>
+                <tr>
+                    <td>First Name</td>
+                    <td>Last Name</td>
+                    <td>Available</td>
+                    <td>Date Added</td>
+
+                </tr>
+                <section id="students">
+                <% students.forEach(student => { %>
+                    <tr>
+                        <form action="/remove/<%= student.id %>?_method=DELETE" method="POST">
+                        <td><%= student.first_name %></td>
+                        <td><%= student.last_name %></td>
+                        <td><%= student.available %></td>
+                        <td><%= student.date_added %></td>
+                        <td><input type="submit" value="remove"></input></td>
+                    </tr>
+                <% }) %>
+                    </section>
+                    </form>
+                    
+            </table>
+                
+
+                <!-- <input type="text" name="first_name" placeholder="first name"></input>
+                <input type="text" name="last_name" placeholder="last name"></input>
+                <input type="submit" value="Submit?"></input> -->
+            </form>
+        </section>
+        <script src="index.js"></script>
+    </body>
+</html>

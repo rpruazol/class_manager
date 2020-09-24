@@ -1,0 +1,8 @@
+
+nav ul {
+    display: flex;
+}
+
+nav li {
+    padding: 5px;
+}

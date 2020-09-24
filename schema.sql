@@ -1,0 +1,9 @@
+DROP TABLE IF EXISTS students;
+
+CREATE TABLE students (
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(255),
+    last_name VARCHAR(255),
+    available BOOLEAN DEFAULT 'TRUE',
+    date_added TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_DATE
+);

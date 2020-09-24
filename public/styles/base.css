@@ -1,0 +1,19 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: ghostwhite;
+}
+
+a {
+    color: rgba(243, 236, 236, 0.87);
+    text-decoration: none;
+
+}
+
+a:hover {
+    border-style: solid;
+    border: solid 1px rgba(243, 236, 236, 0.541);
+
+}
