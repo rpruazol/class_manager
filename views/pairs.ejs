@@ -6,6 +6,23 @@
         <h1>
             TODO:  Pair Names!
         </h1>
+        <form action="/pairs/generate" method="GET">
+            <input type="submit" value="generate"></input>
+        </form>
+        <% if(pairs) { %>
+            <section id="students">
+                <table>
+                    <% pairs.forEach(pair => { %>
+                        <tr>
+                            <td><%= pair %></td>
+                        </tr>
+                    <% }) %>
+                </table>
+                    </section>
+            <% } else { %>
+                <h1>No pairs chosen (yet)</h1>
+            <% } %>
+        </a>
     </body>
 
 

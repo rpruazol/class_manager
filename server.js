@@ -20,6 +20,7 @@ app.use(express.static('public'));
 // routes
 app.get('/', homeHandler);
 app.get('/pairs', pairsHandler);
+app.get('/pairs/generate', pairGeneratorHandler);
 app.get('/randomizer', randomizerHandler);
 app.get('/edit', editHandler);
 app.get('/randomizer/results', randomizerResultsHandler);
@@ -40,7 +41,7 @@ function homeHandler(req, res) {
 }
 
 function pairsHandler(req, res){
-    res.render('pairs');
+    res.render('pairs', {pairs: null});
 }
 
 function randomizerHandler(req, res){
@@ -113,6 +114,69 @@ function deleteHandler(req, res){
         })
 
 }
+
+function pairGeneratorHandler(req, res){
+    let studentArray = [];
+
+    // get student list
+    let SQL = `SELECT first_name, last_name from students;`
+    client
+        .query(SQL)
+        .then(results => {
+            // pass through a student constructor
+            results.rows.forEach(student => {
+                let fullname = `${student.first_name} ${student.last_name}`
+                studentArray.push(new Student(fullname));
+            })
+            let pairedStudents = pairs(studentArray);
+            console.log(pairedStudents);
+            res.render('pairs', {pairs: pairedStudents[0]})
+        })
+        .catch(error => {
+            console.log(error);
+        })
+}
+
+// constructor
+function Student(name) {
+    this.name = name,
+    this.paired_up = false
+}
+
+// functions
+
+function pairs(arr){
+    let combinations = [];
+    let used = {};
+
+  
+   for(let i = 0; i < arr.length; i++) {
+     for(let j = i+1; j < arr.length; j++) {
+       if(arr[i].paired_up === false && arr[j].paired_up === false){
+        let pair = `${arr[i].name} + ${arr[j].name}`;
+        console.log(pair)
+        if(!(pair in used)){
+          combinations.push(pair);
+          used[pair] = true;
+          arr[i].paired_up = true;
+          arr[j].paired_up = true;
+          break
+        }
+       }
+     }
+   }
+   for (let i = 0; i < arr.length; i++) {
+     arr[i].paired_up = false;
+   }
+   return [combinations,used];
+  }
+
+// function savePairs(obj){
+//     let SQL = `INSERT INTO paired_history (student_pair) VALUES($1) RETURNING * `;
+
+//     let params
+
+// }
 
 client.connect() 
     .then(() => {
