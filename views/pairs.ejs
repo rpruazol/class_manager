@@ -9,19 +9,28 @@
         <form action="/pairs/generate" method="GET">
             <input type="submit" value="generate"></input>
         </form>
-        <% if(pairs) { %>
-            <section id="students">
-                <table>
-                    <% pairs.forEach(pair => { %>
-                        <tr>
-                            <td><%= pair %></td>
-                        </tr>
-                    <% }) %>
-                </table>
-                    </section>
-            <% } else { %>
-                <h1>No pairs chosen (yet)</h1>
-            <% } %>
+        <form action="/pairs/save" method="POST">
+            <% if(pairs) { %>
+                <section id="students">
+                    <table>
+                        <% pairs.forEach(pair => { %>
+                            <tr>
+                                <td><%= pair %></td>
+                                <input type="hidden" name="pair" value="<%= pair %>"></input>
+                            </tr>
+                        <% }) %>
+                        <% if(leftover.length > 0) { %> 
+                        <tr>*odd student out = <%=leftover[0].name %>*</tr>
+                        <% } %>
+                    </table>
+                        </section>
+                <% } else { %>
+                    <h1>No pairs chosen (yet)</h1>
+                <% } %>
+            
+            <input type="submit" value="save"></input>
+
+        </form>
         </a>
     </body>
 

@@ -27,12 +27,10 @@ app.get('/randomizer/results', randomizerResultsHandler);
 app.put('/randomizer/reset', resetHandler);
 app.post('/add', addHandler);
 app.delete('/remove/:id', deleteHandler);
+app.post('/pairs/save', savePairsHandler)
 
 
-// misc functions
-function randomStudent(arr) {
-    return arr[Math.floor(Math.random() * arr.length)];
-}
+
 
 // function handlers
 
@@ -117,38 +115,67 @@ function deleteHandler(req, res){
 
 function pairGeneratorHandler(req, res){
     let studentArray = [];
-
-    // get student list
-    let SQL = `SELECT first_name, last_name from students;`
+    //TODO: get student pair history
+    let SQL = `SELECT paired_students from paired_history;`
     client
         .query(SQL)
-        .then(results => {
-            // pass through a student constructor
-            results.rows.forEach(student => {
-                let fullname = `${student.first_name} ${student.last_name}`
-                studentArray.push(new Student(fullname));
+        .then(pairResults => {
+            console.log('pairResults.rows', pairResults.rows)
+            let used = {}
+            let SQL = `SELECT first_name, last_name from students;`
+            pairResults.rows.forEach(pair => {
+                used[pair.paired_students] = true;
             })
-            let pairedStudents = pairs(studentArray);
-            console.log(pairedStudents);
-            res.render('pairs', {pairs: pairedStudents[0]})
+            console.log('used', used)
+            client
+                .query(SQL)
+                .then(results => {
+                    // pass through a student constructor
+                    results.rows.forEach(student => {
+                        let fullname = `${student.first_name} ${student.last_name}`
+                        studentArray.push(new Student(fullname));
+                    })
+                    let pairedStudents = pairs(studentArray, used);
+                    console.log(pairedStudents);
+                    res.render('pairs', {pairs: pairedStudents[0], leftover: pairedStudents[2]})
+                })
         })
+    // get student list
         .catch(error => {
             console.log(error);
         })
 }
 
+function savePairsHandler(req, res) {
+    console.log(req.body.pair);
+    let generatedPairs = req.body.pair
+    generatedPairs.forEach(pair => {
+        console.log('individual pair', pair, typeof pair);
+        let SQL = `INSERT INTO paired_history (paired_students) VALUES ($1);`
+        client
+            .query(SQL, [pair])
+            .catch(error => {
+                console.log(error);
+            })
+    })
+    console.log('done');
+
+}
 // constructor
 function Student(name) {
     this.name = name,
     this.paired_up = false
 }
 
-// functions
+// misc functions
+function randomStudent(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+}
 
-function pairs(arr){
+function pairs(arr, obj={}){
     let combinations = [];
-    let used = {};
-
+    let used = obj;
+    // console.log('used object in pairs function', used);
   
    for(let i = 0; i < arr.length; i++) {
      for(let j = i+1; j < arr.length; j++) {
@@ -165,10 +192,14 @@ function pairs(arr){
        }
      }
    }
+   let leftovers = []
    for (let i = 0; i < arr.length; i++) {
+    if(arr[i].paired_up === false){
+        leftovers.push(arr[i]);
+    }
      arr[i].paired_up = false;
    }
-   return [combinations,used];
+   return [combinations,used, leftovers];
   }
 
 // function savePairs(obj){
