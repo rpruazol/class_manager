@@ -5,7 +5,7 @@ const pg = require('pg');
 const methodOverride = require('method-override');
 
 require('dotenv').config();
-
+const cors = require('cors');
 
 const PORT = process.env.PORT;
 const app = express();
@@ -16,7 +16,7 @@ app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended:true}));
 app.use(methodOverride('_method'));
 app.use(express.static('public'));
-
+app.use(cors());
 // routes
 app.get('/', homeHandler);
 app.get('/pairs', pairsHandler);
@@ -36,6 +36,7 @@ function randomStudent(arr) {
 // function handlers
 
 function homeHandler(req, res) {
+    console.log('he?llo world.');
     res.render('index');
 }
 
