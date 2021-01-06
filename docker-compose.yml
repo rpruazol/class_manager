@@ -1,0 +1,27 @@
+version: "2"
+
+services:
+  db:
+    image: "postgres:12"
+    volumes:  
+      - postgres_data:/var/lib/postgresql/data/
+    
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+    ports:
+      - "5432:5432"
+  web:
+    env_file: .env
+    build: .
+    volumes:
+      - .:/src
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
